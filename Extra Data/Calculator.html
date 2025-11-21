@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimized Calculator</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --calc-bg: #2a2a2a;
+            --display-bg: #3c3c3c;
+            --text-light: #ffffff;
+            --op-color: #ff9500;
+            --misc-color: #a6a6a6;
+            --button-dark: #333333;
+            --shadow-light: rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: var(--calc-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            width: 300px; /* Optimal mobile-friendly width */
+        }
+
+        .display {
+            background-color: var(--display-bg);
+            color: var(--text-light);
+            font-size: 3em;
+            text-align: right;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 50px;
+            line-height: 50px;
+            overflow-x: auto; /* For long numbers */
+            white-space: nowrap;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--button-dark);
+            color: var(--text-light);
+            border: none;
+            padding: 15px;
+            font-size: 1.5em;
+            border-radius: 50%; /* Circle shape */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            height: 60px;
+            width: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent; /* Better UX on mobile */
+        }
+
+        button:active {
+            filter: brightness(120%);
+        }
+
+        .key-op {
+            background-color: var(--op-color);
+            color: var(--text-light);
+        }
+
+        .key-misc {
+            background-color: var(--misc-color);
+            color: var(--bg-dark);
+        }
+
+        .key-zero {
+            grid-column: span 2;
+            border-radius: 30px; /* Oval shape for zero */
+            width: auto;
+            justify-content: flex-start;
+            padding-left: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="keys">
+        <button class="key-misc" onclick="clearDisplay()">AC</button>
+        <button class="key-misc" onclick="deleteLast()">DEL</button>
+        <button class="key-misc" onclick="calculatePercentage()">%</button>
+        <button class="key-op" onclick="setOperation('/')">/</button>
+
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button class="key-op" onclick="setOperation('*')">*</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button class="key-op" onclick="setOperation('-')">-</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button class="key-op" onclick="setOperation('+')">+</button>
+
+        <button class="key-zero" onclick="appendNumber('0')">0</button>
+        <button onclick="appendDecimal()">.</button>
+        <button class="key-op" onclick="evaluateExpression()">=</button>
+    </div>
+</div>
+
+<script>
+    const display = document.getElementById('display');
+    let currentInput = '0';
+    let previousValue = null;
+    let operator = null;
+    let waitingForSecondOperand = false;
+
+    // Updates the calculator display
+    function updateDisplay() {
+        display.textContent = currentInput;
+    }
+
+    // Handles number button clicks
+    function appendNumber(number) {
+        if (waitingForSecondOperand) {
+            currentInput = number;
+            waitingForSecondOperand = false;
+        } else {
+            currentInput = currentInput === '0' ? number : currentInput + number;
+        }
+        updateDisplay();
+    }
+
+    // Handles decimal point button click
+    function appendDecimal() {
+        if (waitingForSecondOperand) {
+            currentInput = '0.';
+            waitingForSecondOperand = false;
+            updateDisplay();
+            return;
+        }
+        if (!currentInput.includes('.')) {
+            currentInput += '.';
+        }
+        updateDisplay();
+    }
+
+    // Clears all state (AC button)
+    function clearDisplay() {
+        currentInput = '0';
+        previousValue = null;
+        operator = null;
+        waitingForSecondOperand = false;
+        updateDisplay();
+    }
+
+    // Deletes the last digit/character (DEL button)
+    function deleteLast() {
+        if (currentInput.length > 1) {
+            currentInput = currentInput.slice(0, -1);
+        } else {
+            currentInput = '0';
+        }
+        updateDisplay();
+    }
+
+    // Handles operation button clicks (+, -, *, /)
+    function setOperation(nextOperator) {
+        const inputValue = parseFloat(currentInput);
+
+        if (previousValue === null && !isNaN(inputValue)) {
+            previousValue = inputValue;
+        } else if (operator) {
+            const result = performCalculation[operator](previousValue, inputValue);
+            currentInput = String(result);
+            previousValue = result;
+            updateDisplay();
+        }
+
+        waitingForSecondOperand = true;
+        operator = nextOperator;
+    }
+
+    // Performs the final calculation ( = button)
+    function evaluateExpression() {
+        const inputValue = parseFloat(currentInput);
+
+        if (previousValue === null || operator === null || waitingForSecondOperand) {
+            return;
+        }
+        
+        const result = performCalculation[operator](previousValue, inputValue);
+        currentInput = String(result);
+        previousValue = null;
+        operator = null;
+        waitingForSecondOperand = true; // Ready for a new calculation
+        updateDisplay();
+    }
+
+    // Core logic for calculations
+    const performCalculation = {
+        '/': (prev, curr) => prev / curr,
+        '*': (prev, curr) => prev * curr,
+        '+': (prev, curr) => prev + curr,
+        '-': (prev, curr) => prev - curr,
+    };
+
+    /**
+     * Percentage Calculation Logic
+     * Handles two main cases:
+     * 1. If an operator is set (e.g., 100 + 10%): calculates a percentage of the previous value (100) and uses it as the current operand (10).
+     * 2. If no operator is set (e.g., just press 50%): converts the current number to its decimal percentage (0.5).
+     */
+    function calculatePercentage() {
+        const inputValue = parseFloat(currentInput);
+        if (isNaN(inputValue)) return;
+
+        if (operator && previousValue !== null) {
+            // Case 1: Part of an operation (e.g., 100 + 10%)
+            // Calculate X% of Y, where X is currentInput and Y is previousValue
+            const percentageValue = (previousValue * inputValue) / 100;
+            currentInput = String(percentageValue);
+        } else {
+            // Case 2: Standalone percentage (e.g., just 50%)
+            // Convert number to its decimal equivalent (e.g., 50 -> 0.5)
+            currentInput = String(inputValue / 100);
+        }
+        waitingForSecondOperand = false;
+        updateDisplay();
+    }
+
+    // Initialize display on load
+    updateDisplay();
+</script>
+
+</body>
+</html>

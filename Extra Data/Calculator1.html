@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimized Calculator</title>
+    <style>
+        /* --- Color Variables --- */
+        :root {
+            /* DARK MODE (Default) */
+            --bg-dark: #1e1e1e;
+            --calc-bg: #2a2a2a;
+            --display-bg: #3c3c3c;
+            --text-light: #ffffff;
+            --op-color: #ff9500;
+            --misc-color: #a6a6a6;
+            --button-dark: #333333;
+            --shadow-light: rgba(0, 0, 0, 0.2);
+        }
+
+        /* LIGHT MODE (Activated by .light-mode class on body) */
+        body.light-mode {
+            --bg-dark: #f0f0f0;
+            --calc-bg: #ffffff;
+            --display-bg: #e0e0e0;
+            --text-light: #000000;
+            --op-color: #ff8c00; /* Slightly different orange */
+            --misc-color: #d0d0d0;
+            --button-dark: #f0f0f0;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+        }
+
+        /* LIGHT MODE Text/Button colors */
+        body.light-mode .key-op {
+            color: var(--text-light); /* Operator color remains white for high contrast */
+        }
+        body.light-mode .key-misc {
+            color: var(--text-light); /* Misc color is dark for contrast against light button */
+            background-color: #a6a6a6;
+        }
+        body.light-mode button {
+            color: var(--text-light); /* Number buttons are dark text on light background */
+            background-color: var(--button-dark);
+        }
+        body.light-mode .mode-toggle-button {
+            color: var(--text-light);
+            background-color: var(--op-color); /* Orange toggle button */
+        }
+
+        /* --- Base Styling (Applies to both modes) --- */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s; /* Smooth mode transition */
+        }
+
+        .calculator {
+            background-color: var(--calc-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            width: 300px;
+        }
+        
+        /* --- Toggle Button Area --- */
+        .header {
+            display: flex;
+            justify-content: flex-end; /* Push button to the right */
+            margin-bottom: 10px;
+        }
+
+        .mode-toggle-button {
+            background-color: var(--button-dark);
+            color: var(--text-light);
+            border: none;
+            padding: 8px 12px;
+            font-size: 1em;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            line-height: 1;
+            box-shadow: 0 2px 5px var(--shadow-light);
+        }
+
+        .mode-toggle-button:hover {
+            opacity: 0.8;
+        }
+
+        /* --- Calculator Components --- */
+        .display {
+            background-color: var(--display-bg);
+            color: var(--text-light);
+            font-size: 3em;
+            text-align: right;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 50px;
+            line-height: 50px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--button-dark);
+            color: var(--text-light);
+            border: none;
+            padding: 15px;
+            font-size: 1.5em;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            height: 60px;
+            width: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:active {
+            filter: brightness(120%);
+        }
+
+        .key-op {
+            background-color: var(--op-color);
+            color: var(--text-light);
+        }
+
+        .key-misc {
+            background-color: var(--misc-color);
+            color: var(--bg-dark);
+        }
+
+        .key-zero {
+            grid-column: span 2;
+            border-radius: 30px;
+            width: auto;
+            justify-content: flex-start;
+            padding-left: 25px;
+        }
+    </style>
+</head>
+<body class="dark-mode"> <div class="calculator">
+    
+    <div class="header">
+        <button class="mode-toggle-button" onclick="toggleMode()" id="mode-toggle">☀️ Light Mode</button>
+    </div>
+    
+    <div class="display" id="display">0</div>
+    <div class="keys">
+        <button class="key-misc" onclick="clearDisplay()">AC</button>
+        <button class="key-misc" onclick="deleteLast()">DEL</button>
+        <button class="key-misc" onclick="calculatePercentage()">%</button>
+        <button class="key-op" onclick="setOperation('/')">/</button>
+
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button class="key-op" onclick="setOperation('*')">*</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button class="key-op" onclick="setOperation('-')">-</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button class="key-op" onclick="setOperation('+')">+</button>
+
+        <button class="key-zero" onclick="appendNumber('0')">0</button>
+        <button onclick="appendDecimal()">.</button>
+        <button class="key-op" onclick="evaluateExpression()">=</button>
+    </div>
+</div>
+
+<script>
+    // --- Mode Toggle Script ---
+    function toggleMode() {
+        const body = document.body;
+        const toggleButton = document.getElementById('mode-toggle');
+        
+        if (body.classList.contains('light-mode')) {
+            // Switch to Dark Mode
+            body.classList.remove('light-mode');
+            toggleButton.textContent = '☀️ Light Mode';
+        } else {
+            // Switch to Light Mode
+            body.classList.add('light-mode');
+            toggleButton.textContent = '🌙 Dark Mode';
+        }
+    }
+
+    // --- Calculator Logic ---
+    const display = document.getElementById('display');
+    let currentInput = '0';
+    let previousValue = null;
+    let operator = null;
+    let waitingForSecondOperand = false;
+
+    function updateDisplay() {
+        display.textContent = currentInput;
+    }
+
+    function appendNumber(number) {
+        if (waitingForSecondOperand) {
+            currentInput = number;
+            waitingForSecondOperand = false;
+        } else {
+            currentInput = currentInput === '0' ? number : currentInput + number;
+        }
+        updateDisplay();
+    }
+
+    function appendDecimal() {
+        if (waitingForSecondOperand) {
+            currentInput = '0.';
+            waitingForSecondOperand = false;
+            updateDisplay();
+            return;
+        }
+        if (!currentInput.includes('.')) {
+            currentInput += '.';
+        }
+        updateDisplay();
+    }
+
+    function clearDisplay() {
+        currentInput = '0';
+        previousValue = null;
+        operator = null;
+        waitingForSecondOperand = false;
+        updateDisplay();
+    }
+
+    function deleteLast() {
+        if (currentInput.length > 1) {
+            currentInput = currentInput.slice(0, -1);
+        } else {
+            currentInput = '0';
+        }
+        updateDisplay();
+    }
+
+    function setOperation(nextOperator) {
+        const inputValue = parseFloat(currentInput);
+
+        if (previousValue === null && !isNaN(inputValue)) {
+            previousValue = inputValue;
+        } else if (operator) {
+            const result = performCalculation[operator](previousValue, inputValue);
+            currentInput = String(result);
+            previousValue = result;
+            updateDisplay();
+        }
+
+        waitingForSecondOperand = true;
+        operator = nextOperator;
+    }
+
+    function evaluateExpression() {
+        const inputValue = parseFloat(currentInput);
+
+        if (previousValue === null || operator === null || waitingForSecondOperand) {
+            return;
+        }
+        
+        const result = performCalculation[operator](previousValue, inputValue);
+        currentInput = String(result);
+        previousValue = null;
+        operator = null;
+        waitingForSecondOperand = true;
+        updateDisplay();
+    }
+
+    const performCalculation = {
+        '/': (prev, curr) => prev / curr,
+        '*': (prev, curr) => prev * curr,
+        '+': (prev, curr) => prev + curr,
+        '-': (prev, curr) => prev - curr,
+    };
+
+    /**
+     * CORRECTED Percentage Calculation Logic
+     * Simply converts the current display number to its decimal percentage equivalent.
+     * Example: 50 -> 0.5. This allows users to then multiply or divide normally.
+     * Example usage: 100 * 50% = 100 * 0.5 = 50.
+     */
+    function calculatePercentage() {
+        const inputValue = parseFloat(currentInput);
+        if (isNaN(inputValue)) return;
+
+        // Convert the current number to its decimal percentage (e.g., 50 -> 0.5)
+        currentInput = String(inputValue / 100);
+        
+        waitingForSecondOperand = false;
+        updateDisplay();
+    }
+
+    // Initialize display and set default mode text
+    updateDisplay();
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.body.classList.contains('light-mode')) {
+            document.getElementById('mode-toggle').textContent = '🌙 Dark Mode';
+        } else {
+            document.getElementById('mode-toggle').textContent = '☀️ Light Mode';
+        }
+    });
+</script>
+
+</body>
+</html>
