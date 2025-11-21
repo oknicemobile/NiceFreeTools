@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Nice Free Tools - Calculators & Utilities</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">Nice Free Tools</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="tools.html">Nice Free Tools</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <button id="theme-toggle" class="btn btn-toggle">🌙 Dark Mode</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1 style="text-align:center; margin-bottom: 2rem;">All 12 Free Tools</h1>
+
+        <div class="ad-slot">Ad Space Top</div>
+
+        <div class="grid-tools">
+            
+            <div class="tool-card" id="calculator">
+                <h3>1. Basic Calculator</h3>
+                <div class="input-group"><input type="number" id="calc-n1" placeholder="Number 1"></div>
+                <div class="input-group"><input type="number" id="calc-n2" placeholder="Number 2"></div>
+                <div>
+                    <button class="btn btn-primary" onclick="calc('+')">+</button>
+                    <button class="btn btn-primary" onclick="calc('-')">-</button>
+                    <button class="btn btn-primary" onclick="calc('*')">x</button>
+                    <button class="btn btn-primary" onclick="calc('/')">/</button>
+                </div>
+                <div class="result-box" id="calc-res">Result: 0</div>
+            </div>
+
+            <div class="tool-card" id="compounding">
+                <h3>2. Compound Interest</h3>
+                <div class="input-group"><label>Principal</label><input type="number" id="ci-p" value="1000"></div>
+                <div class="input-group"><label>Rate (%)</label><input type="number" id="ci-r" value="5"></div>
+                <div class="input-group"><label>Years</label><input type="number" id="ci-t" value="10"></div>
+                <div class="input-group"><label>Compounded per year</label><input type="number" id="ci-n" value="12"></div>
+                <button class="btn btn-primary" onclick="calcCompoundInterest()">Calculate</button>
+                <div class="result-box" id="ci-res">Result: 0</div>
+            </div>
+
+            <div class="tool-card">
+                <h3>3. Interest Calculator</h3>
+                <div class="input-group"><input type="number" id="si-p" placeholder="Principal"></div>
+                <div class="input-group"><input type="number" id="si-r" placeholder="Rate %"></div>
+                <div class="input-group"><input type="number" id="si-t" placeholder="Time (Years)"></div>
+                <button class="btn btn-primary" onclick="calcSimpleInterest()">Calculate</button>
+                <div class="result-box" id="si-res">Interest: 0</div>
+            </div>
+
+            <div class="tool-card" id="bmi">
+                <h3>4. BMI Calculator</h3>
+                <div class="input-group"><input type="number" id="bmi-w" placeholder="Weight (kg)"></div>
+                <div class="input-group"><input type="number" id="bmi-h" placeholder="Height (cm)"></div>
+                <button class="btn btn-primary" onclick="calcBMI()">Check BMI</button>
+                <div class="result-box" id="bmi-res">BMI: 0</div>
+            </div>
+
+            <div class="tool-card">
+                <h3>5. Word Counter</h3>
+                <div class="input-group"><textarea id="word-input" rows="3" placeholder="Type here..." style="width:100%"></textarea></div>
+                <button class="btn btn-primary" onclick="countWords()">Count</button>
+                <div class="result-box" id="word-res">Words: 0</div>
+            </div>
+
+             <div class="tool-card">
+                <h3>6. Age Calculator</h3>
+                <div class="input-group"><label>Date of Birth</label><input type="date" id="age-dob"></div>
+                <button class="btn btn-primary" onclick="calcAge()">Calculate Age</button>
+                <div class="result-box" id="age-res">Age: 0</div>
+            </div>
+
+             <div class="tool-card">
+                <h3>7. Discount Calculator</h3>
+                <div class="input-group"><input type="number" id="disc-price" placeholder="Original Price"></div>
+                <div class="input-group"><input type="number" id="disc-off" placeholder="Discount %"></div>
+                <button class="btn btn-primary" onclick="calcDiscount()">Calculate</button>
+                <div class="result-box" id="disc-res">Final: 0</div>
+            </div>
+
+            <div class="tool-card">
+                <h3>8. Password Generator</h3>
+                <button class="btn btn-primary" onclick="genPass()">Generate Secure PW</button>
+                <div class="result-box" id="pass-res">...</div>
+            </div>
+
+             <div class="tool-card">
+                <h3>9. Tip Calculator</h3>
+                <div class="input-group"><input type="number" id="tip-bill" placeholder="Bill Amount"></div>
+                <div class="input-group"><input type="number" id="tip-perc" placeholder="Tip %"></div>
+                <button class="btn btn-primary" onclick="calcTip()">Calculate</button>
+                <div class="result-box" id="tip-res">Total: 0</div>
+            </div>
+
+            <div class="tool-card">
+                <h3>10. Percentage Calc</h3>
+                <div class="input-group">What is <input type="number" id="perc-num" placeholder="20" style="width:50px"> of <input type="number" id="perc-tot" placeholder="100" style="width:50px">?</div>
+                <button class="btn btn-primary" onclick="calcPerc()">Calculate</button>
+                <div class="result-box" id="perc-res">Result: 0%</div>
+            </div>
+
+            <div class="tool-card">
+                <h3>11. Days Counter</h3>
+                <div class="input-group"><input type="date" id="day-1"></div>
+                <div class="input-group"><input type="date" id="day-2"></div>
+                <button class="btn btn-primary" onclick="calcDays()">Diff</button>
+                <div class="result-box" id="day-res">Days: 0</div>
+            </div>
+
+            <div class="tool-card">
+                <h3>12. Length Converter</h3>
+                <div class="input-group"><input type="number" id="len-m" placeholder="Meters"></div>
+                <button class="btn btn-primary" onclick="calcLen()">Convert to Feet</button>
+                <div class="result-box" id="len-res">Feet: 0</div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="privacy.html">Privacy Policy</a>
+    </footer>
+    <script src="js/script.js"></script>
+</body>
+</html>
